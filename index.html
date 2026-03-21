@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PosePro | AI Launcher</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">PosePro</div>
+        <div id="status-badge" class="status-badge">
+            <div id="status-dot" class="status-dot offline"></div>
+            <span id="status-text">Checking Link...</span>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1 class="glow-text">AI Fitness Analysis</h1>
+            <p>Launch your real-time shoulder raise tracker instantly.</p>
+            
+            <div class="cta-container">
+                <button id="start-btn" class="btn-primary">
+                    🚀 Launch Live Session
+                </button>
+                
+                <div class="url-manager glass-card">
+                    <label>Update Live ngrok URL</label>
+                    <div class="input-row">
+                        <input type="text" id="url-input" placeholder="https://xxxx.ngrok-free.app">
+                        <button onclick="saveUrl()">Save</button>
+                    </div>
+                    <div id="msg"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
