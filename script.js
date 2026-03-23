@@ -1,96 +1,35 @@
-let ngrokUrl = "";
-
-const startBtn = document.getElementById('start-btn');
-const urlInput = document.getElementById('url-input');
-const passwordInput = document.getElementById('password-input');
-const statusDot = document.getElementById('status-dot');
-const statusText = document.getElementById('status-text');
-const msg = document.getElementById('msg');
-
-// Load saved URL from Global Database (Vercel KV) on startup
-window.addEventListener('load', async () => {
+// Fetch the redirect URL from the file and redirect immediately
+async function performRedirect() {
     try {
-        const res = await fetch('/api/get-url');
-        const data = await res.json();
-        
-        if (data && data.url) {
-            ngrokUrl = data.url;
-            urlInput.value = data.url;
-            updateStatus(true);
+        const response = await fetch('redirect-url.txt');
+        const url = await response.text();
+        const trimmedUrl = url.trim();
+
+        if (trimmedUrl && trimmedUrl.startsWith('http')) {
+            // Update the Launch button link just in case
+            const startBtn = document.getElementById('start-btn');
+            if (startBtn) {
+                startBtn.onclick = () => window.location.href = trimmedUrl;
+                startBtn.textContent = "Redirecting...";
+            }
+
+            // Perform automatic redirect
+            window.location.href = trimmedUrl;
         } else {
-            // Fallback to config.json if KV is empty
-            const configRes = await fetch('config.json');
-            const configData = await configRes.json();
-            ngrokUrl = configData.url;
-            urlInput.value = configData.url;
-            updateStatus(true);
+            console.error("No valid URL found in redirect-url.txt");
+            const statusText = document.getElementById('status-text');
+            if (statusText) statusText.textContent = "🔴 Error: No URL set";
         }
-    } catch (e) {
-        console.error("Error fetching URL:", e);
-        updateStatus(false);
-    }
-});
-
-async function saveUrl() {
-    const newUrl = urlInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    if (!newUrl.startsWith('http')) {
-        alert("Please enter a valid URL starting with http");
-        return;
-    }
-
-    if (!password) {
-        alert("Please enter the password to save changes.");
-        return;
-    }
-
-    try {
-        msg.textContent = "Saving...";
-        const response = await fetch('/api/update-url', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: newUrl, password: password })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            ngrokUrl = newUrl;
-            updateStatus(true);
-            msg.textContent = "✓ URL Saved Permanently (Global)";
-            passwordInput.value = ""; // Clear password
-            setTimeout(() => msg.textContent = "", 3000);
-        } else {
-            const errorMsg = result.details ? `${result.error}: ${result.details}` : (result.error || "Failed to save");
-            msg.textContent = "❌ " + errorMsg;
-            msg.style.color = "red";
-            setTimeout(() => {
-                msg.textContent = "";
-                msg.style.color = "";
-            }, 5000); // Increased timeout for reading details
-        }
-    } catch (e) {
-        console.error("Save error:", e);
-        alert("An error occurred while saving.");
+    } catch (error) {
+        console.error("Error fetching redirect URL:", error);
     }
 }
 
-function updateStatus(isOnline) {
-    if (isOnline) {
-        statusDot.className = 'status-dot online';
-        statusText.textContent = '🟢 Live';
-    } else {
-        statusDot.className = 'status-dot offline';
-        statusText.textContent = '🔴 Offline';
-    }
-}
+// Start redirect process
+performRedirect();
 
-startBtn.addEventListener('click', () => {
-    if (ngrokUrl) {
-        startBtn.textContent = "Connecting...";
-        window.location.href = ngrokUrl;
-    } else {
-        alert("Please update the ngrok URL below first.");
-    }
+// Keep the button functional for manually triggering if needed
+document.getElementById('start-btn')?.addEventListener('click', () => {
+    // This will be handled by the update in performRedirect, but as a fallback:
+    performRedirect();
 });
