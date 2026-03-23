@@ -7,8 +7,9 @@ export default async function (req, res) {
 
   const { url, password } = req.body || {};
 
-  // Verify password (hardcoded)
-  if (password !== 'Suveer123') {
+  // Verify password using environment variable
+  const securePassword = process.env.ADMIN_PASSWORD || 'Suveer123'; // Fallback for safety during transition
+  if (password !== securePassword) {
     return res.status(401).json({ error: 'Incorrect Password' });
   }
 
