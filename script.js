@@ -62,12 +62,13 @@ async function saveUrl() {
             passwordInput.value = ""; // Clear password
             setTimeout(() => msg.textContent = "", 3000);
         } else {
-            msg.textContent = "❌ " + (result.error || "Failed to save");
+            const errorMsg = result.details ? `${result.error}: ${result.details}` : (result.error || "Failed to save");
+            msg.textContent = "❌ " + errorMsg;
             msg.style.color = "red";
             setTimeout(() => {
                 msg.textContent = "";
                 msg.style.color = "";
-            }, 3000);
+            }, 5000); // Increased timeout for reading details
         }
     } catch (e) {
         console.error("Save error:", e);

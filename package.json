@@ -1,6 +1,7 @@
 {
   "name": "posepro-vercel",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@vercel/kv": "^1.0.1"
